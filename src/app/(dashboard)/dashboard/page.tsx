@@ -5,6 +5,7 @@ import {
   laborCostPercent,
   primeCostPercent,
   netMarginPercent,
+  weeklyFixedCost,
   getStatus,
   getStatusLabel,
 } from "@/lib/calculations";
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
 
   const { data: restaurant } = await supabase
     .from("restaurants")
-    .select("id")
+    .select("id, monthly_fixed_costs")
     .eq("user_id", user!.id)
     .single();
 
@@ -84,11 +85,14 @@ export default async function DashboardPage() {
   const foodCost = foodCostPercent(entry.food_purchases, entry.bev_purchases, entry.net_sales);
   const laborCost = laborCostPercent(entry.total_labor, entry.net_sales);
   const primeCost = primeCostPercent(foodCost, laborCost);
+  const fixedCost = weeklyFixedCost(restaurant!.monthly_fixed_costs ?? 0);
   const netMargin = netMarginPercent(
     entry.net_sales,
     entry.food_purchases,
     entry.bev_purchases,
-    entry.total_labor
+    entry.total_labor,
+    fixedCost,
+    entry.other_costs ?? 0
   );
   const status = getStatus(primeCost);
   const statusLabel = getStatusLabel(status);
@@ -107,9 +111,14 @@ export default async function DashboardPage() {
             Here&apos;s how the week went.
           </p>
         </div>
-        <Link href="/entry" className="btn-ghost whitespace-nowrap">
-          New week
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/history" className="btn-ghost whitespace-nowrap">
+            History
+          </Link>
+          <Link href="/entry" className="btn-ghost whitespace-nowrap">
+            New week
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -185,10 +194,22 @@ export default async function DashboardPage() {
             </span>
           </div>
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            What you actually kept after everything — fixed costs not counted yet
+            What you actually kept after everything, including rent and other
+            fixed costs
           </p>
         </div>
       </div>
+
+      {!restaurant!.monthly_fixed_costs && (
+        <p className="mt-4 text-xs" style={{ color: "var(--text-muted)" }}>
+          You haven&apos;t set your fixed costs yet, so net margin above is
+          overstated.{" "}
+          <Link href="/settings" style={{ color: "var(--accent)" }}>
+            Add them in settings
+          </Link>
+          .
+        </p>
+      )}
     </div>
   );
 }

@@ -33,11 +33,16 @@ export function primeCostPercent(
 }
 
 /**
+ * Fixed costs are entered monthly (that's how rent and insurance actually
+ * get billed) but every other number in the app is weekly. Convert using
+ * 52 weeks / 12 months so a monthly figure lines up with a weekly one.
+ */
+export function weeklyFixedCost(monthlyFixedCosts: number): number {
+  return (monthlyFixedCosts * 12) / 52;
+}
+
+/**
  * Net margin = (net sales − food − beverage − labor − fixed − other) / net sales
- *
- * Fixed costs and other costs default to 0 until the owner enters them.
- * This means net margin will be an overestimate until "Honest margin" ships.
- * That's fine — we show what we know.
  */
 export function netMarginPercent(
   netSales: number,

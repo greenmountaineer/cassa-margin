@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "./sign-out-button";
@@ -55,7 +56,12 @@ export default async function AuthenticatedLayout({
             {restaurant.name}
           </span>
         </div>
-        <SignOutButton />
+        <div className="flex items-center gap-2">
+          <Link href="/settings" className="btn-ghost">
+            Settings
+          </Link>
+          <SignOutButton />
+        </div>
       </header>
 
       {/* Page content */}
