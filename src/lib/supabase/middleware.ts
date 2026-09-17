@@ -31,13 +31,15 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If no session and trying to access a protected route, redirect to login
+  // If no session and trying to access a protected route, redirect to login.
   // "/" is the public landing page — it handles its own logged-in redirect.
+  // "/api" routes handle their own auth (e.g. the cron secret bearer token).
   if (
     !user &&
     request.nextUrl.pathname !== "/" &&
     !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
+    !request.nextUrl.pathname.startsWith("/auth") &&
+    !request.nextUrl.pathname.startsWith("/api")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
