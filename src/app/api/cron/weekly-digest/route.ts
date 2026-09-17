@@ -46,23 +46,30 @@ export async function GET(request: Request) {
       latest && Date.now() - new Date(`${latest.week_ending}T00:00:00Z`).getTime() <= WEEK_MS;
 
     try {
-      if (isCurrent && latest) {
-        const { subject, html, text } = buildDigestEmail({
-          restaurantName: restaurant.name,
-          weekEnding: latest.week_ending,
-          current: latest,
-          previous: entries?.[1] ?? null,
-          appUrl,
-        });
-        await resend.emails.send({ from: EMAIL_FROM, to: email, subject, html, text });
-        results.push({ restaurant: restaurant.name, sent: "digest" });
+      const kind = isCurrent && latest ? "digest" : "reminder";
+      const { subject, html, text } =
+        kind === "digest" && latest
+          ? buildDigestEmail({
+              restaurantName: restaurant.name,
+              weekEnding: latest.week_ending,
+              current: latest,
+              previous: entries?.[1] ?? null,
+              appUrl,
+            })
+          : buildReminderEmail({ restaurantName: restaurant.name, appUrl });
+
+      const { error: sendError } = await resend.emails.send({
+        from: EMAIL_FROM,
+        to: email,
+        subject,
+        html,
+        text,
+      });
+
+      if (sendError) {
+        results.push({ restaurant: restaurant.name, sent: "skipped", reason: sendError.message });
       } else {
-        const { subject, html, text } = buildReminderEmail({
-          restaurantName: restaurant.name,
-          appUrl,
-        });
-        await resend.emails.send({ from: EMAIL_FROM, to: email, subject, html, text });
-        results.push({ restaurant: restaurant.name, sent: "reminder" });
+        results.push({ restaurant: restaurant.name, sent: kind });
       }
     } catch (err) {
       results.push({
