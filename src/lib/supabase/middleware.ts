@@ -32,8 +32,10 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // If no session and trying to access a protected route, redirect to login
+  // "/" is the public landing page — it handles its own logged-in redirect.
   if (
     !user &&
+    request.nextUrl.pathname !== "/" &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {
