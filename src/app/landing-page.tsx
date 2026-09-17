@@ -269,19 +269,55 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing / final CTA */}
+      {/* Pricing */}
       <section id="pricing" className="border-t" style={{ borderColor: "var(--border-subtle)", background: "var(--bg-secondary)" }}>
-        <div className="max-w-2xl mx-auto px-5 py-20 text-center">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
-            Five minutes a week. That&apos;s it.
-          </h2>
-          <p className="mt-4 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
-            Free during beta. $99/month after — and the first 50 founding members
-            lock in $49/month for life.
-          </p>
-          <div className="mt-8 flex justify-center">
+        <div className="max-w-4xl mx-auto px-5 py-20">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
+              Five minutes a week. That&apos;s it.
+            </h2>
+            <p className="mt-3 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+              Free during beta. Two tiers once billing turns on — lock in the lower one now.
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 max-w-2xl mx-auto">
+            <div className="card relative" style={{ borderColor: "var(--status-green-border)", background: "var(--status-green-bg)" }}>
+              <span
+                className="absolute -top-3 left-6 rounded-full px-3 py-1 text-xs font-medium"
+                style={{ background: "var(--status-green)", color: "var(--bg-primary)" }}
+              >
+                First 50 only
+              </span>
+              <h3 className="text-sm font-semibold mt-2" style={{ color: "var(--text-primary)" }}>Founding member</h3>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-3xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>$49</span>
+                <span className="text-sm" style={{ color: "var(--text-muted)" }}>/mo, locked for life</span>
+              </div>
+              <p className="mt-3 text-xs" style={{ color: "var(--text-secondary)" }}>
+                Same product, forever. The rate never goes up, even after we raise
+                prices for everyone else.
+              </p>
+            </div>
+
+            <div className="card">
+              <h3 className="text-sm font-semibold mt-2" style={{ color: "var(--text-primary)" }}>Standard</h3>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-3xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>$99</span>
+                <span className="text-sm" style={{ color: "var(--text-muted)" }}>/mo</span>
+              </div>
+              <p className="mt-3 text-xs" style={{ color: "var(--text-secondary)" }}>
+                Full access, month to month. Cancel any time.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 flex justify-center">
             <TalkButton className="!pl-7 !pr-2 !py-2.5 text-base" />
           </div>
+          <p className="mt-3 text-center text-xs" style={{ color: "var(--text-muted)" }}>
+            Free during beta. No card required.
+          </p>
         </div>
       </section>
 
