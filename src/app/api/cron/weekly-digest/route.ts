@@ -1,7 +1,16 @@
+import { setDefaultResultOrder } from "node:dns";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getResendClient, EMAIL_FROM } from "@/lib/resend";
 import { buildDigestEmail, buildReminderEmail } from "@/lib/email/digest";
+
+// Attempted fix for a known class of Vercel Node-runtime DNS issue
+// (ENOTFOUND on custom subdomains like Supabase's project URL). Left in
+// because it's harmless even though it didn't resolve the actual bug —
+// see KNOWN_ISSUES.md.
+setDefaultResultOrder("ipv4first");
+
+export const dynamic = "force-dynamic";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -20,7 +29,10 @@ export async function GET(request: Request) {
     .select("id, user_id, name");
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message, details: error.details, hint: error.hint, code: error.code },
+      { status: 500 }
+    );
   }
 
   const results: { restaurant: string; sent: "digest" | "reminder" | "skipped"; reason?: string }[] = [];
@@ -43,7 +55,7 @@ export async function GET(request: Request) {
 
     const latest = entries?.[0];
     const isCurrent =
-      latest && Date.now() - new Date(`${latest.week_ending}T00:00:00Z`).getTime() <= WEEK_MS;
+      latest != null && Date.now() - new Date(`${latest.week_ending}T00:00:00Z`).getTime() <= WEEK_MS;
 
     try {
       const kind = isCurrent && latest ? "digest" : "reminder";
